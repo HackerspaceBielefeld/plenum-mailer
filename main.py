@@ -1,11 +1,28 @@
 import smtplib
 import ssl
+import os
 
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from coolname import generate_slug
+from dotenv import load_dotenv
 
+from Matrix import Matrix
+
+# Load environment variables from .env file
+load_dotenv()
+
+# mail
+SENDER_MAIL = os.getenv("SENDER_MAIL")
+PASSWORD = os.getenv("PASSWORD")
+SMTP_SERVER = os.getenv("SMTP_SERVER")
+RECEIVER_MAIL = os.getenv("RECEIVER_MAIL")
+# matrix
+MATRIX_SERVER_URL = os.getenv("MATRIX_SERVER_URL")
+MATRIX_USERNAME = os.getenv("MATRIX_USERNAME")
+MATRIX_PASSWORD = os.getenv("MATRIX_PASSWORD")
+MATRIX_ROOM_ID = os.getenv("MATRIX_ROOM_ID")
 
 def get_second_thursday():
     # Get the current date
@@ -26,22 +43,53 @@ def get_second_thursday():
 
     return second_thursday
 
-def sent_mail(second_thursday: str):
-    sender_email = "<SENDER_MAIL_ADDRESS>"
-    password = "<PASSWORD>"
-    smtp_server = "<SMTP_SERVER>"
-    receiver_email = "<MAILINGLIST>"
+def check_correct_date(second_thursday: datetime) -> bool:
+    today = datetime.now().strftime("%d.%m.%Y")
+    tuesday_before = second_thursday - timedelta(days=2)
 
+    # Ensure it's tuesday before the second thursday
+    if today != tuesday_before.strftime("%d.%m.%Y"):
+        return False
+    return True
+
+
+def send_matrix_message(server_url: str, username: str, password: str, room_id: str, message: str, subject: str):
+    matrix=Matrix(
+        username=username,              # Matrix username (without homeserver)
+        password=password,              # Matrix password
+        homeserver=server_url,          # Matrix homeserver
+        room_id=room_id,                # Room ID
+    )
+    matrix.send("# " + subject + "\n" + message)
+
+def sent_mail(str, body: str, subject: str):
     # Create a multipart message and set headers
     message = MIMEMultipart()
-    message["From"] = sender_email
-    message["To"] = receiver_email
-    message["Subject"] = f"Einladung zum Plenum am {second_thursday} - 20:00 Uhr"
+    message["From"] = SENDER_MAIL
+    message["To"] = RECEIVER_MAIL
+    message["Subject"] = subject
 
     # Add body to email
+    message.attach(MIMEText(body, "plain"))
+    content = message.as_string()
+
+    # Log in to server using secure context and send email
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(SMTP_SERVER, 465, context=context) as server:
+        server.login(SENDER_MAIL, PASSWORD)
+        server.sendmail(SENDER_MAIL, RECEIVER_MAIL, content)
+
+def main():
+    second_thursday = get_second_thursday()
+    second_thursday_format = second_thursday.strftime("%d.%m.%Y")
+    if not check_correct_date(second_thursday):
+        print("wrong date, nothing sent")
+    #    return
+    
+    subject = f"Einladung zum Plenum am {second_thursday_format} - 20:00 Uhr"
     body = (
         "Hallo zusammen,\n"
-        f"am Donnerstag {second_thursday} findet wie gewohnt das Plenum statt.\n"
+        f"am Donnerstag {second_thursday_format} findet wie gewohnt das Plenum statt.\n"
         "Teilnehmen könnt ihr natürlich in Präsenz oder online über unser Jitsi.\n\n"
 
         f"Online Teilnahme: https://conference.space.bi/{generate_slug(2).replace('-', '')}\n"
@@ -50,30 +98,11 @@ def sent_mail(second_thursday: str):
         "Viele Grüße\n"
     )
 
-    message.attach(MIMEText(body, "plain"))
-    content = message.as_string()
-
-    # Log in to server using secure context and send email
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(smtp_server, 465, context=context) as server:
-        server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_email, content)
-
-    return True
-
-def main():
-    today = datetime.now().strftime("%d.%m.%Y")
-    second_thursday = get_second_thursday()
-    tuesday_before = second_thursday - timedelta(days=2)
-
-    # Ensure it's tuesday before the second thursday
-    if today != tuesday_before.strftime("%d.%m.%Y"):
-        print("No mail was sent because it's not tuesday before the second thursday")
-        return
-    
-    sent_mail(second_thursday.strftime("%d.%m.%Y"))
+    # Sent Mail
+    sent_mail(body, subject)
+    # Sent Matrix
+    send_matrix_message(MATRIX_SERVER_URL, MATRIX_USERNAME, MATRIX_PASSWORD, MATRIX_ROOM_ID, body, subject)
     return
-
 
 if __name__ == "__main__":
     main()

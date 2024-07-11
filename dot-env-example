@@ -1,0 +1,10 @@
+# mail
+SENDER_MAIL="noreply@example.de"
+PASSWORD="password123"
+SMTP_SERVER="mail.example.de"
+RECEIVER_MAIL="users@group.de"
+# matrix
+MATRIX_SERVER_URL="https://matrix.example.de"
+MATRIX_USERNAME="user123"
+MATRIX_PASSWORD="password123"
+MATRIX_ROOM_ID="!abc123:matrix.example.de"
