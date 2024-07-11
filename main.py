@@ -106,7 +106,7 @@ def main() -> None:
     # Sent Mail
     sent_mail(body, subject)
     # Sent Matrix
-    #send_matrix_message(MATRIX_SERVER_URL, MATRIX_USERNAME, MATRIX_PASSWORD, MATRIX_ROOM_ID, body, subject)
+    send_matrix_message(MATRIX_SERVER_URL, MATRIX_USERNAME, MATRIX_PASSWORD, MATRIX_ROOM_ID, body, subject)
     return
 
 if __name__ == "__main__":
