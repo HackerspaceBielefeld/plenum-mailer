@@ -60,9 +60,13 @@ def send_matrix_message(server_url: str, username: str, password: str, room_id: 
         homeserver=server_url,          # Matrix homeserver
         room_id=room_id,                # Room ID
     )
-    matrix.send("# " + subject + "\n" + message)
 
-def sent_mail(str, body: str, subject: str):
+    message_raw = subject + "\n" + message
+    message_html = "<h1>" + subject + "</h1><br>" + message.replace("\n", "<br>")
+
+    matrix.send(message_raw, message_html)
+
+def sent_mail(body: str, subject: str):
     # Create a multipart message and set headers
     message = MIMEMultipart()
     message["From"] = SENDER_MAIL
@@ -99,7 +103,7 @@ def main():
     )
 
     # Sent Mail
-    sent_mail(body, subject)
+    #sent_mail(body, subject)
     # Sent Matrix
     send_matrix_message(MATRIX_SERVER_URL, MATRIX_USERNAME, MATRIX_PASSWORD, MATRIX_ROOM_ID, body, subject)
     return
