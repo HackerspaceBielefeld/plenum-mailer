@@ -5,7 +5,7 @@ To use it, follow the following instructions.
 
 # Setup instructions
 1. Clone the repository e.g to `git clone https://github.com/HackerspaceBielefeld/plenum-mailer.git /home/user`
-2. Rename the example env file `dot-env-example` to '.env' and configure the variables.
+2. Rename the example env file `dot-env-example` to `.env` and configure the variables.
 3. Create a virtual enviroment `python3 -m venv .venv`
 4. Activate the virtual enviroment `source .venv/bin/activate`
 5. Install the requirements `pip install -r requirements.txt`
