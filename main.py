@@ -72,6 +72,7 @@ def sent_mail(body: str, subject: str) -> None:
     message["From"] = SENDER_MAIL
     message["To"] = RECEIVER_MAIL
     message["Subject"] = subject
+    message["Date"] = datetime.now().strftime('%a, %d %b %Y %H:%M:%S %z')
 
     # Add body to email
     message.attach(MIMEText(body, "plain"))
@@ -103,9 +104,9 @@ def main() -> None:
     )
 
     # Sent Mail
-    #sent_mail(body, subject)
+    sent_mail(body, subject)
     # Sent Matrix
-    send_matrix_message(MATRIX_SERVER_URL, MATRIX_USERNAME, MATRIX_PASSWORD, MATRIX_ROOM_ID, body, subject)
+    #send_matrix_message(MATRIX_SERVER_URL, MATRIX_USERNAME, MATRIX_PASSWORD, MATRIX_ROOM_ID, body, subject)
     return
 
 if __name__ == "__main__":
