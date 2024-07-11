@@ -24,7 +24,7 @@ MATRIX_USERNAME = os.getenv("MATRIX_USERNAME")
 MATRIX_PASSWORD = os.getenv("MATRIX_PASSWORD")
 MATRIX_ROOM_ID = os.getenv("MATRIX_ROOM_ID")
 
-def get_second_thursday():
+def get_second_thursday() -> None:
     # Get the current date
     now = datetime.now()
     year = now.year
@@ -53,7 +53,7 @@ def check_correct_date(second_thursday: datetime) -> bool:
     return True
 
 
-def send_matrix_message(server_url: str, username: str, password: str, room_id: str, message: str, subject: str):
+def send_matrix_message(server_url: str, username: str, password: str, room_id: str, message: str, subject: str) -> None:
     matrix=Matrix(
         username=username,              # Matrix username (without homeserver)
         password=password,              # Matrix password
@@ -62,11 +62,11 @@ def send_matrix_message(server_url: str, username: str, password: str, room_id: 
     )
 
     message_raw = subject + "\n" + message
-    message_html = "<h1>" + subject + "</h1><br>" + message.replace("\n", "<br>")
+    message_html = "<h1>" + subject + "</h1>" + message.replace("\n", "<br>")
 
     matrix.send(message_raw, message_html)
 
-def sent_mail(body: str, subject: str):
+def sent_mail(body: str, subject: str) -> None:
     # Create a multipart message and set headers
     message = MIMEMultipart()
     message["From"] = SENDER_MAIL
@@ -83,7 +83,7 @@ def sent_mail(body: str, subject: str):
         server.login(SENDER_MAIL, PASSWORD)
         server.sendmail(SENDER_MAIL, RECEIVER_MAIL, content)
 
-def main():
+def main() -> None:
     second_thursday = get_second_thursday()
     second_thursday_format = second_thursday.strftime("%d.%m.%Y")
     if not check_correct_date(second_thursday):
