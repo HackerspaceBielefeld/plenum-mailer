@@ -89,7 +89,7 @@ def main() -> None:
     second_thursday_format = second_thursday.strftime("%d.%m.%Y")
     if not check_correct_date(second_thursday):
         print("wrong date, nothing sent")
-    #    return
+        return
     
     subject = f"Einladung zum Plenum am {second_thursday_format} - 20:00 Uhr"
     body = (
