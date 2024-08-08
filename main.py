@@ -62,7 +62,7 @@ def send_matrix_message(server_url: str, username: str, password: str, room_id: 
     )
 
     message_raw = subject + "\n" + message
-    message_html = "<h1>" + subject + "</h1>" + message.replace("\n", "<br>")
+    message_html = "<h1>" + subject + "</h1><br>" + message.replace("\n", "<br>")
 
     matrix.send(message_raw, message_html)
 
