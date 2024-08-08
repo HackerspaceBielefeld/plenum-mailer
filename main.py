@@ -48,7 +48,7 @@ def check_correct_date(second_thursday: datetime) -> bool:
     tuesday_before = second_thursday - timedelta(days=2)
 
     # Ensure it's tuesday before the second thursday
-    if today != tuesday_before.strftime("%d.%m.%Y"):
+    if today != tuesday_before.strftime("%d.%m.%Y") or today != second_thursday:
         return False
     return True
 
@@ -103,9 +103,10 @@ def main() -> None:
         "Viele Grüße\n"
     )
 
-    # Sent Mail
-    sent_mail(body, subject)
-    # Sent Matrix
+    # Sent Mail only on tuesday
+    if datetime.now().strftime("%d.%m.%Y") == second_thursday:
+        sent_mail(body, subject)
+    # Sent Matrix tuesday and thursday
     send_matrix_message(MATRIX_SERVER_URL, MATRIX_USERNAME, MATRIX_PASSWORD, MATRIX_ROOM_ID, body, subject)
     return
 
